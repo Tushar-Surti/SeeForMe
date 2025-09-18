@@ -68,11 +68,11 @@ Developed with ❤️ to make technology more **inclusive** and **accessible**.
 
 ---
 
-## 📜 License
+<!-- ## 📜 License
 
 This project is licensed under the **MIT License** – feel free to use and improve it.
 
----
+--- -->
 
 ✨ *“See the world, your way.”*
 
