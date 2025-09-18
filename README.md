@@ -40,15 +40,15 @@ While existing solutions exist, they are often:
 | -------------------------------- | ------------------------------------- | --------------------------------- | ------------------------------------ |
 | ![Home](screenshots/screen1.png) | ![Detection](screenshots/screen2.png) | ![Scene](screenshots/screen3.png) | ![Settings](screenshots/screen4.png) | -->
 <p align="center">
-  <img src="screenshots/screen1.png" width="100%" alt="Home Screen"/>
+  <img src="screen1.png" width="100%" alt="Home Screen"/>
 </p>
 
 <p align="center">
-  <img src="screenshots/screen2.png" width="100%" alt="Object Detection"/>
+  <img src="screen2.png" width="100%" alt="Object Detection"/>
 </p>
 
 <p align="center">
-  <img src="screenshots/screen3.png" width="100%" alt="Scene Description"/>
+  <img src="screen3.png" width="100%" alt="Scene Description"/>
 </p>
 ---
 
