@@ -1,0 +1,41 @@
+PODS:
+  - camera_avfoundation (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - flutter_tts (0.0.1):
+    - Flutter
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - volume_controller (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - volume_controller (from `.symlinks/plugins/volume_controller/ios`)
+
+EXTERNAL SOURCES:
+  camera_avfoundation:
+    :path: ".symlinks/plugins/camera_avfoundation/ios"
+  Flutter:
+    :path: Flutter
+  flutter_tts:
+    :path: ".symlinks/plugins/flutter_tts/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  volume_controller:
+    :path: ".symlinks/plugins/volume_controller/ios"
+
+SPEC CHECKSUMS:
+  camera_avfoundation: 04b44aeb14070126c6529e5ab82cc7c9fca107cf
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_tts: b88dbc8655d3dc961bc4a796e4e16a4cc1795833
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  volume_controller: ca1cde542ee70fad77d388f82e9616488110942b
+
+PODFILE CHECKSUM: 4305caec6b40dde0ae97be1573c53de1882a07e5
+
+COCOAPODS: 1.16.2
