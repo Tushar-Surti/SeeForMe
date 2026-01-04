@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:seeforme/home_page.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -15,7 +14,6 @@ Future<void> setupCameras() async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
   await setupCameras();
   runApp(const MyApp());
 }

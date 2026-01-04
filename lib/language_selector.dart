@@ -40,34 +40,34 @@ class _LanguageSelectorState extends State<LanguageSelector> {
         widget.onLanguageChanged();
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Color(0xFF6C63FF).withOpacity(0.1),
+          color: const Color(0xFF6C63FF).withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Color(0xFF6C63FF).withOpacity(0.3),
+            color: const Color(0xFF6C63FF).withOpacity(0.3),
             width: 1.5,
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.language,
               color: Color(0xFF6C63FF),
               size: 20,
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Text(
               _currentLanguage,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF3F3D9B),
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),
             ),
-            SizedBox(width: 2),
-            Icon(
+            const SizedBox(width: 2),
+            const Icon(
               Icons.arrow_drop_down,
               color: Color(0xFF6C63FF),
               size: 18,

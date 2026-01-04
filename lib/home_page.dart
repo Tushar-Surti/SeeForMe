@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:seeforme/claude_service.dart';
+import 'package:seeforme/narration_service.dart';
 import 'package:seeforme/camera_service.dart';
 import 'package:seeforme/language_service.dart';
 import 'package:seeforme/language_selector.dart';
@@ -25,6 +25,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool showDescription = false;
   final FlutterTts flutterTts = FlutterTts();
   final CameraService _cameraService = CameraService();
+  final NarrationService _narrationService = NarrationService();
   String _currentLanguageCode = 'en-US';
   
   // Create a class-level instance of VolumeController
@@ -89,6 +90,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _configureTts();
     
     // Check if first launch to show language selection
+    
+    // Initialize the offline narration service
+    _initNarrationService();
+  }
+
+  // Initialize offline narration service
+  Future<void> _initNarrationService() async {
+    print('========================================');
+    print('INITIALIZING NARRATION SERVICE...');
+    print('========================================');
+    try {
+      await _narrationService.initialize();
+      print('========================================');
+      print('OFFLINE NARRATION SERVICE INITIALIZED SUCCESSFULLY');
+      print('========================================');
+    } catch (e, stackTrace) {
+      print('========================================');
+      print('ERROR INITIALIZING NARRATION SERVICE: $e');
+      print('Stack trace: $stackTrace');
+      print('========================================');
+    }
     _checkFirstLaunch();
   }
 
@@ -119,7 +141,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           // Show visual feedback
           ScaffoldMessenger.of(context).clearSnackBars(); // Clear any existing snackbars
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text("Volume button pressed - taking photo"),
               duration: Duration(milliseconds: 1000),
               backgroundColor: Color(0xFF6C63FF),
@@ -135,7 +157,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       });
       
       // Show a message about volume button usage
-      Future.delayed(Duration(milliseconds: 1000), () {
+      Future.delayed(const Duration(milliseconds: 1000), () {
         _showVolumeButtonInfo();
       });
       
@@ -168,8 +190,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        duration: Duration(seconds: 3),
-        backgroundColor: Color(0xFF3F3D9B),
+        duration: const Duration(seconds: 3),
+        backgroundColor: const Color(0xFF3F3D9B),
       ),
     );
   }
@@ -193,7 +215,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<void> _checkFirstLaunch() async {
     if (await LanguageService.isFirstLaunch()) {
       // Small delay to ensure the UI is fully rendered
-      Future.delayed(Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         LanguageService.showLanguageSelectionDialog(context);
       });
     }
@@ -216,7 +238,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // Test if the language is supported
     var result = await flutterTts.isLanguageAvailable(languageCode);
     print("Language $languageCode available: $result");
-
+_narrationService.dispose();
+    
     // Print the currently selected language
     print("Current language set to: $languageCode");
   }
@@ -308,13 +331,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<void> _analyzeImage() async {
     if (image == null) return;
     
+    print("========================================");
+    print("Starting image analysis...");
+    print("========================================");
+    
     setState(() {
       isLoading = true;
       showDescription = false;
     });
     
     try {
-      final result = await ClaudeService().analyzeImage(image!, languageCode: _currentLanguageCode);
+      final result = await _narrationService.generateNarration(image!, _currentLanguageCode);
+      
+      print("========================================");
+      print("Analysis complete! Result: $result");
+      print("========================================");
       
       setState(() {
         description = result;
@@ -327,8 +358,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _fadeController.forward();
       
       await _speak(result);
-    } catch (e) {
-      print("Error analyzing image: $e");
+    } catch (e, stackTrace) {
+      print("========================================");
+      print("ERROR analyzing image: $e");
+      print("Stack trace: $stackTrace");
+      print("========================================");
       setState(() {
         isLoading = false;
       });
@@ -388,7 +422,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         
         for (var chunk in textChunks) {
           await flutterTts.speak(chunk);
-          await Future.delayed(Duration(milliseconds: 500)); // Small pause between chunks
+          await Future.delayed(const Duration(milliseconds: 500)); // Small pause between chunks
         }
       } else {
         await flutterTts.speak(text);
@@ -407,12 +441,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: _startCamera,
-        backgroundColor: Color(0xFF6C63FF),
-        child: Icon(Icons.camera_alt, color: Colors.white),
+        backgroundColor: const Color(0xFF6C63FF),
         tooltip: 'Take Photo',
+        child: Icon(Icons.camera_alt, color: Colors.white),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -434,9 +468,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
+                    const Row(
                       children: [
-                        const Text(
+                        Text(
                           "SeeForMe",
                           style: TextStyle(
                             fontSize: 28,
@@ -490,29 +524,29 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   margin: const EdgeInsets.only(top: 10),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.95),
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40),
                     ),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40),
                     ),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                       child: SingleChildScrollView(
-                        physics: BouncingScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 30),
+                              const SizedBox(height: 30),
 
                               // Heading
-                              Text(
+                              const Text(
                                 "Let's see the world",
                                 style: TextStyle(
                                   fontSize: 24,
@@ -520,7 +554,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   color: Color(0xFF3F3D9B),
                                 ),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
                                 "Take a photo to get a detailed description",
                                 style: TextStyle(
@@ -528,7 +562,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   color: Colors.grey.shade700,
                                 ),
                               ),
-                              SizedBox(height: 30),
+                              const SizedBox(height: 30),
 
                               // Image Container
                               Container(
@@ -538,10 +572,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   borderRadius: BorderRadius.circular(24),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Color(0xFF6C63FF).withOpacity(0.2),
+                                      color: const Color(0xFF6C63FF).withOpacity(0.2),
                                       spreadRadius: 2,
                                       blurRadius: 20,
-                                      offset: Offset(0, 10),
+                                      offset: const Offset(0, 10),
                                     ),
                                   ],
                                 ),
@@ -551,7 +585,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     decoration: BoxDecoration(
                                       color: Colors.grey.shade200,
                                       border: Border.all(
-                                        color: Color(0xFF6C63FF).withOpacity(0.3),
+                                        color: const Color(0xFF6C63FF).withOpacity(0.3),
                                         width: 2,
                                       ),
                                     ),
@@ -566,7 +600,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               if (isLoading)
                                                 Container(
                                                   color: Colors.black.withOpacity(0.5),
-                                                  child: Center(
+                                                  child: const Center(
                                                     child: Column(
                                                       mainAxisSize: MainAxisSize.min,
                                                       children: [
@@ -595,10 +629,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               Icon(
                                                 Icons.image_search_rounded,
                                                 size: 80,
-                                                color: Color(0xFF6C63FF).withOpacity(0.6),
+                                                color: const Color(0xFF6C63FF).withOpacity(0.6),
                                               ),
-                                              SizedBox(height: 16),
-                                              Text(
+                                              const SizedBox(height: 16),
+                                              const Text(
                                                 "Your image will appear here",
                                                 style: TextStyle(
                                                   fontSize: 16,
@@ -606,7 +640,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   color: Color(0xFF3F3D9B),
                                                 ),
                                               ),
-                                              SizedBox(height: 8),
+                                              const SizedBox(height: 8),
                                               Text(
                                                 "Take a photo to get started",
                                                 style: TextStyle(
@@ -619,16 +653,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 30),
+                              const SizedBox(height: 30),
 
                               // Action Button
                               GestureDetector(
                                 onTap: _startCamera,
                                 child: Container(
                                   width: double.infinity,
-                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
+                                    gradient: const LinearGradient(
                                       colors: [
                                         Color(0xFF6C63FF),
                                         Color(0xFF584BEA),
@@ -637,14 +671,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     borderRadius: BorderRadius.circular(16),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Color(0xFF6C63FF).withOpacity(0.3),
+                                        color: const Color(0xFF6C63FF).withOpacity(0.3),
                                         spreadRadius: 1,
                                         blurRadius: 8,
-                                        offset: Offset(0, 4),
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
                                   ),
-                                  child: Row(
+                                  child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
@@ -664,7 +698,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 30),
+                              const SizedBox(height: 30),
 
                               // Description
                               if (!isLoading && description != null)
@@ -672,9 +706,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   opacity: _animation,
                                   child: Container(
                                     width: double.infinity,
-                                    padding: EdgeInsets.all(24),
+                                    padding: const EdgeInsets.all(24),
                                     decoration: BoxDecoration(
-                                      gradient: LinearGradient(
+                                      gradient: const LinearGradient(
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                         colors: [
@@ -688,11 +722,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           color: Colors.grey.withOpacity(0.15),
                                           spreadRadius: 2,
                                           blurRadius: 15,
-                                          offset: Offset(0, 5),
+                                          offset: const Offset(0, 5),
                                         ),
                                       ],
                                       border: Border.all(
-                                        color: Color(0xFF6C63FF).withOpacity(0.2),
+                                        color: const Color(0xFF6C63FF).withOpacity(0.2),
                                         width: 1.5,
                                       ),
                                     ),
@@ -702,19 +736,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         Row(
                                           children: [
                                             Container(
-                                              padding: EdgeInsets.all(8),
+                                              padding: const EdgeInsets.all(8),
                                               decoration: BoxDecoration(
-                                                color: Color(0xFF6C63FF).withOpacity(0.1),
+                                                color: const Color(0xFF6C63FF).withOpacity(0.1),
                                                 borderRadius: BorderRadius.circular(12),
                                               ),
-                                              child: Icon(
+                                              child: const Icon(
                                                 Icons.auto_awesome,
                                                 color: Color(0xFF6C63FF),
                                                 size: 22,
                                               ),
                                             ),
-                                            SizedBox(width: 12),
-                                            Text(
+                                            const SizedBox(width: 12),
+                                            const Text(
                                               "AI Description",
                                               style: TextStyle(
                                                 fontSize: 20,
@@ -724,7 +758,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(height: 16),
+                                        const SizedBox(height: 16),
                                         Text(
                                           description!,
                                           style: TextStyle(
@@ -737,7 +771,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                              SizedBox(height: 40),
+                              const SizedBox(height: 40),
                             ],
                           ),
                         ),

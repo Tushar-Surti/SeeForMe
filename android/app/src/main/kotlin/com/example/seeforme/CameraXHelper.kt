@@ -27,9 +27,6 @@ class CameraXHelper(private val context: Context) {
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
 
-            // Preview use case
-            val preview = Preview.Builder().build()
-
             // Image capture use case
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
@@ -42,18 +39,21 @@ class CameraXHelper(private val context: Context) {
                 // Unbind any bound use cases before rebinding
                 cameraProvider.unbindAll()
 
-                // Bind use cases to camera
+                // Bind use cases to camera (no preview surface required)
                 camera = cameraProvider.bindToLifecycle(
                     lifecycleOwner,
                     cameraSelector,
-                    preview,
                     imageCapture
                 )
 
-                // Auto capture after a short delay
-                camera?.let {
-                    it.cameraControl.enableTorch(false)
-                    captureImage(onImageCaptured)
+                // Give camera a moment to open before capture
+                cameraExecutor.execute {
+                    try {
+                        Thread.sleep(250)
+                        captureImage(onImageCaptured)
+                    } catch (e: InterruptedException) {
+                        Log.e(TAG, "Capture delay interrupted", e)
+                    }
                 }
 
             } catch (exc: Exception) {

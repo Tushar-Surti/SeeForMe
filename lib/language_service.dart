@@ -102,6 +102,7 @@ class LanguageService {
   // Show language selection dialog
   static Future<void> showLanguageSelectionDialog(BuildContext context) async {
     final currentLanguage = await getSelectedLanguage();
+    String selectedLanguage = currentLanguage;
     final FlutterTts tempTts = FlutterTts(); // For testing language support
     
     // Get supported languages for highlighting
@@ -118,14 +119,14 @@ class LanguageService {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: Text(
+          title: const Text(
             'Select Language',
             style: TextStyle(
               color: Color(0xFF3F3D9B),
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
               shrinkWrap: true,
@@ -137,10 +138,11 @@ class LanguageService {
                 return ListTile(
                   leading: Radio<String>(
                     value: language,
-                    groupValue: currentLanguage,
-                    activeColor: Color(0xFF6C63FF),
+                    groupValue: selectedLanguage,
+                    activeColor: const Color(0xFF6C63FF),
                     onChanged: (String? value) async {
                       if (value != null) {
+                        selectedLanguage = value;
                         await setSelectedLanguage(value);
                         Navigator.of(context).pop();
                       }
@@ -160,6 +162,7 @@ class LanguageService {
                     ),
                   ),
                   onTap: () async {
+                    selectedLanguage = language;
                     await setSelectedLanguage(language);
                     Navigator.of(context).pop();
                   },
@@ -170,10 +173,11 @@ class LanguageService {
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: Color(0xFF6C63FF),
+                foregroundColor: const Color(0xFF6C63FF),
               ),
-              child: Text('Confirm'),
-              onPressed: () {
+              child: const Text('Confirm'),
+              onPressed: () async {
+                await setSelectedLanguage(selectedLanguage);
                 Navigator.of(context).pop();
               },
             ),

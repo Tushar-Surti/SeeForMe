@@ -1,0 +1,10 @@
+# Place Model Files Here
+
+This directory should contain the following TensorFlow Lite models:
+
+1. **yolov5s-fp16.tflite** - YOLO object detection model (~15-20 MB)
+2. **phi3-mini.gguf** - Phi-3 language model (~50-200 MB)
+
+See the README.md in this directory for download and setup instructions.
+
+**Note:** These files are not included in the repository due to their size. You must download them separately.
