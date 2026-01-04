@@ -96,39 +96,6 @@ Text-to-Speech (Multi-language)
 - Android Studio / Xcode (for mobile development)
 - TensorFlow Lite models (see setup instructions below)
 
-### Steps
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/yourusername/SeeForMe.git
-   cd SeeForMe
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Download AI models:**
-   - See `assets/models/README.md` for detailed model download instructions
-   - Required models:
-     - `yolov5s-fp16.tflite` (~15-20 MB)
-    - `phi3-mini.gguf` (~50-200 MB)
-   - Place models in `assets/models/` directory
-
-4. **Run the app:**
-   ```bash
-   flutter run
-   ```
-
-5. **Build release APK:**
-   ```bash
-   flutter build apk --release
-   ```
-
-For detailed setup and troubleshooting, see [OFFLINE_MIGRATION.md](OFFLINE_MIGRATION.md)
-
----
 
 ## 📸 App Screenshots
 
